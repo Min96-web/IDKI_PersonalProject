@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour
+public class MoveBackwards : MonoBehaviour
 {
-    private float speed = 50;
+    private float speed = 10f;
+    private float destroyBound = -15f;
 
     private PlayerController playerControllerScript;
 
-    private float leftBound = -15;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,13 +20,11 @@ public class Move : MonoBehaviour
     {
         if (playerControllerScript.gameOver == false)
         {
-            transform.Translate(Vector3.forward * Time.deltaTime * speed);
+            transform.Translate(Vector3.back * (Time.deltaTime * speed));
         }
 
-        if (transform.position.x < leftBound && gameObject.CompareTag("Obstacle"))
-        {
+        if (transform.position.x < destroyBound &&
+            (gameObject.CompareTag("Obstacle") || gameObject.CompareTag("Road")))
             Destroy(gameObject);
-        }
-        
     }
 }
