@@ -1,26 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject obstaclePrefab;
-    public GameObject roadPrefab;
+    public GameObject[] obstaclePrefabs;
+    public GameObject[] coinPrefabs;
 
-    private Vector3 spawnPosition = new Vector3(25, 0, 0);
+    private float startDelay = 0;
+    private float repeatRate = 5;
 
-    private float startDelay = 2;
-
-    private float repeatRate = 2;
-
-    private PlayerController playerControllerScript;
+    public BoxCollider roadBoxCollider;
+    private Vector3 roadSize;
+    private GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
-        InvokeRepeating("SpawnRoad", 0.85f, 7.9f);
+        gameManager = FindObjectOfType<GameManager>();
         InvokeRepeating("SpawnObstacle", startDelay, repeatRate);
+        InvokeRepeating("SpawnCoin", startDelay, repeatRate);
+        roadSize = roadBoxCollider.GetComponent<BoxCollider>().size;
     }
 
     // Update is called once per frame
@@ -28,20 +29,22 @@ public class SpawnManager : MonoBehaviour
     {
     }
 
-    void SpawnRoad()
-    {
-        if (playerControllerScript.gameOver == false)
-        {
-            Vector3 spawnPos = new Vector3(56.6f, -131.52f, 225f);
-            Instantiate(roadPrefab, spawnPosition, roadPrefab.transform.rotation);
-        }
-    }
-
     void SpawnObstacle()
     {
-        if (playerControllerScript.gameOver == false)
+        if (gameManager.isGameOver == false)
         {
-            Instantiate(obstaclePrefab, spawnPosition, obstaclePrefab.transform.rotation);
+            Vector3 spawnPosition = new Vector3(Random.Range(-roadSize.x / 2, roadSize.x / 2), 2, 220);
+            var randomIndex = Random.Range(0, obstaclePrefabs.Length);
+            Instantiate(obstaclePrefabs[randomIndex], spawnPosition, obstaclePrefabs[randomIndex].transform.rotation);
+        }
+    }
+    void SpawnCoin()
+    {
+        if (gameManager.isGameOver == false)
+        {
+            Vector3 spawnPosition = new Vector3(Random.Range(-roadSize.x / 2, roadSize.x/ 2), 2, 220);
+            var randomIndex = Random.Range(0, coinPrefabs.Length);
+            Instantiate(coinPrefabs[randomIndex], spawnPosition, obstaclePrefabs[randomIndex].transform.rotation);
         }
     }
 }

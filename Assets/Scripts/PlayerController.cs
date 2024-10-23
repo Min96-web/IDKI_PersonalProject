@@ -1,41 +1,50 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private float speed =25.0f;
-    private float turnSpeed = 50.0f; 
-    private float horizontalInput;
+    private GameManager gameManager;
+    private Rigidbody playerRigidbody;
 
-    private float forwardInput;
+    public ParticleSystem explosionParticles;
 
-    public bool gameOver = false;
-    
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerRigidbody = GetComponent<Rigidbody>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //This is where we get player input
-        horizontalInput = Input.GetAxis("Horizontal");
-        forwardInput = Input.GetAxis("Vertical");
-        
-        //Move the Vehicle forward based on vertical input
-        //transform.Translate(Vector3.forward * Time.deltaTime * speed * forwardInput);
-        //We turn the vehicle based on horizontal input
-        transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput);
+        if (gameManager.isGameOver == false)
+        {
+            var moveDirection = Input.GetAxis("Horizontal");
+            if (moveDirection != 0)
+            {
+                playerRigidbody.Move(
+                    new Vector3(moveDirection * 4f, transform.position.y, transform.position.z),
+                    Quaternion.Euler(0, 0, 0));
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
-    { 
+    {
+        Debug.Log(collision.gameObject.tag);
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            gameOver = true;
+            explosionParticles.Play();
+            gameManager.GameOver();
+        }
+        else if (collision.gameObject.CompareTag("Coin"))
+        {
+            gameManager.CoinCollected();
+            Destroy(collision.gameObject);
         }
     }
 }
