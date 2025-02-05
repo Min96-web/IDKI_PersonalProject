@@ -8,13 +8,14 @@ public class PlayerController : MonoBehaviour
 {
     private GameManager gameManager;
     private Rigidbody playerRigidbody;
-
     public ParticleSystem explosionParticles;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Retrieves Rigidbody attached to same GameObject,it responsible for physics interactions, allow object to move and react to forces.
         playerRigidbody = GetComponent<Rigidbody>();
+        //Searches for GameManager in the scene, access gamemanagement functions such as scoring,level management.
         gameManager = FindObjectOfType<GameManager>();
     }
 
@@ -23,17 +24,20 @@ public class PlayerController : MonoBehaviour
     {
         if (gameManager.isGameOver == false)
         {
+            //Input for horizontal movement,
             var moveDirection = Input.GetAxis("Horizontal");
+            //Input from player
             if (moveDirection != 0)
             {
+                //Move player
                 playerRigidbody.Move(
-                    new Vector3(moveDirection * 4f, transform.position.y, transform.position.z),
-                    Quaternion.Euler(0, 0, 0));
+                    new Vector3(moveDirection * 4f, transform.position.y, transform.position.z), //new vector for movement
+                    Quaternion.Euler(0, 0, 0)); //Rotation for the movement as player's curren rotation
             }
         }
     }
-
-    private void OnCollisionEnter(Collision collision)
+    
+    private void OnCollisionEnter(Collision collision) // It calls when the object is attached to collides with another object.
     {
         Debug.Log(collision.gameObject.tag);
         if (collision.gameObject.CompareTag("Obstacle"))
